@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+artifacts/
+cache/
+typechain-types/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+coverage.json
+
+# Misc
+.DS_Store
+*.log

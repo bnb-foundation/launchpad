@@ -1,0 +1,36 @@
+{
+  "name": "bnb-launchpad",
+  "version": "1.0.0",
+  "description": "BNB Decentralized Launchpad",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat ignition deploy ./ignition/modules/BnbLaunchpad.ts --network bscTestnet",
+    "deploy:mainnet": "hardhat ignition deploy ./ignition/modules/BnbLaunchpad.ts --network bscMainnet",
+    "verify": "ts-node scripts/verify.ts",
+    "clean": "hardhat clean"
+  },
+  "keywords": [
+    "launchpad",
+    "bnb",
+    "defi",
+    "presale"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.1",
+    "@types/node": "^25.0.8",
+    "dotenv": "^16.6.1",
+    "hardhat": "^2.28.3",
+    "merkletreejs": "^0.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "@openzeppelin/contracts-upgradeable": "^5.4.0"
+  }
+}
