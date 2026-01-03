@@ -1,0 +1,533 @@
+
+> bnb-launchpad@1.0.0 test
+> hardhat test
+
+
+
+  Integration Tests
+    Full Presale Lifecycle
+      1) Should complete full lifecycle: create -> contribute -> finalize -> claim
+      ✔ Should handle presale failure and refunds correctly (258ms)
+      ✔ Should handle creator cancellation and refunds (128ms)
+    Multiple Concurrent Presales
+      2) Should handle multiple presales running concurrently
+      ✔ Should track all presales in factory correctly (199ms)
+    Complex Contribution Patterns
+      3) Should handle many small contributions correctly
+      4) Should handle contributions up to exact hard cap
+    Gas Optimization Verification
+      5) Should efficiently handle batch claims
+
+  BnbFactory
+    Deployment
+      ✔ Should deploy proxy correctly (525ms)
+      ✔ Should set owner correctly (38ms)
+      ✔ Should set implementation correctly
+      ✔ Should set fee recipient correctly
+      ✔ Should set default platform fee to 200 bps (2%)
+      ✔ Should revert with zero implementation address (323ms)
+      ✔ Should revert with zero fee recipient address (172ms)
+    createPresale
+      ✔ Should create presale clone successfully
+      ✔ Should emit PresaleCreated event (50ms)
+      ✔ Should track presale in array
+      ✔ Should track presale in mapping by index
+      ✔ Should initialize presale clone correctly (87ms)
+      ✔ Should revert with zero token address
+      ✔ Should revert with zero rate
+      ✔ Should revert when softCap > hardCap
+      ✔ Should revert when minContribution > maxContribution
+      ✔ Should revert when startTime >= endTime
+      ✔ Should revert when liquidityBps > 10000
+      ✔ Should create multiple presales
+    Fee Management
+      ✔ Should have default platform fee of 200 bps (2%)
+      ✔ Should allow owner to update platform fee
+      ✔ Should emit FeeUpdated event
+      ✔ Should revert when fee exceeds 10000 bps
+      ✔ Should allow fee of exactly 10000 bps (100%)
+      ✔ Should revert when non-owner tries to update fee
+      ✔ Should allow owner to update fee recipient
+      ✔ Should emit FeeRecipientUpdated event
+      ✔ Should revert when setting zero address as fee recipient
+      ✔ Should revert when non-owner tries to update fee recipient
+    Implementation Management
+      ✔ Should allow owner to update implementation (81ms)
+      ✔ Should emit ImplementationUpdated event (98ms)
+      ✔ Should revert when setting zero address as implementation
+      ✔ Should revert when non-owner tries to update implementation (61ms)
+    UUPS Upgrade
+      ✔ Should allow owner to upgrade contract (223ms)
+      ✔ Should revert when non-owner tries to upgrade (61ms)
+      ✔ Should preserve state after upgrade (174ms)
+    View Functions
+      ✔ Should return correct presale count
+      ✔ Should return all presales
+      ✔ Should return presale by index (57ms)
+
+  BnbPresale
+    Initialization
+      ✔ Should set all parameters correctly (656ms)
+      ✔ Should start in Pending state
+      ✔ Should have zero total raised initially
+    State Transitions
+      ✔ Should transition from Pending to Active after start time
+      ✔ Should remain Pending before start time
+      ✔ Should transition to Cancelled when creator cancels
+      6) Should transition to Finalized after finalization
+    contribute()
+      ✔ Should accept valid contribution
+      ✔ Should update contribution mapping
+      ✔ Should update total raised
+      ✔ Should emit Contributed event
+      ✔ Should revert if not in Active state
+      ✔ Should revert if contribution below minimum
+      ✔ Should accept contribution at exact minimum
+      ✔ Should revert if contribution exceeds max per wallet
+      ✔ Should accept contribution at exact maximum
+      ✔ Should revert if multiple contributions exceed max
+      ✔ Should allow multiple contributions within max
+      7) Should revert if hard cap would be exceeded
+      ✔ Should revert after end time
+      ✔ Should accept contributions from multiple users
+    finalize()
+      8) Should finalize when hard cap reached
+      9) Should finalize after end time if soft cap met
+      10) Should revert if called before end time and hard cap not reached
+      ✔ Should revert if soft cap not reached after end time
+      11) Should emit Finalized event
+      12) Should revert if insufficient tokens in contract
+      13) Should finalize at exactly soft cap
+    Platform Fee
+      14) Should send correct platform fee to fee recipient
+      15) Should calculate platform fee correctly for large amounts
+    refund()
+      ✔ Should allow refund if soft cap not met after end time
+      ✔ Should return exact contribution amount
+      ✔ Should emit Refunded event
+      ✔ Should allow refund if presale cancelled
+      ✔ Should revert if no contribution to refund
+      16) Should revert if presale succeeded
+      ✔ Should reset contribution to zero after refund
+    claim()
+      17) Should allow claiming tokens after finalization
+      18) Should transfer correct token amount based on rate
+      19) Should emit Claimed event
+      20) Should revert if not finalized
+      21) Should revert if already claimed
+      22) Should revert if no tokens to claim
+      23) Should mark contributor as claimed
+    cancel()
+      ✔ Should allow creator to cancel presale
+      ✔ Should emit Cancelled event
+      ✔ Should revert if caller is not creator
+      24) Should revert if already finalized
+    Edge Cases
+      ✔ Should handle contribution exactly at max wallet limit
+      25) Should handle presale reaching exactly soft cap
+      26) Should handle presale reaching exactly hard cap
+
+  BnbVesting
+    Deployment
+      ✔ Should deploy with correct token (351ms)
+      ✔ Should set owner correctly
+      ✔ Should revert with zero token address (38ms)
+    addVestingSchedule
+      ✔ Should add vesting schedule successfully
+      ✔ Should emit VestingScheduleAdded event
+      ✔ Should store schedule correctly
+      ✔ Should use current timestamp if startTime is 0
+      ✔ Should revert with zero beneficiary address
+      ✔ Should revert with zero total amount
+      ✔ Should revert with zero duration
+      ✔ Should revert when cliff duration exceeds total duration
+      ✔ Should revert when called by non-owner
+      ✔ Should allow updating existing schedule
+    vestedAmount
+      ✔ Should return 0 before cliff
+      ✔ Should return 0 exactly at start time with cliff
+      ✔ Should return correct amount after cliff
+      ✔ Should return linear vesting amount at 50% duration
+      ✔ Should return total amount after vesting period
+      ✔ Should return 0 for non-existent beneficiary
+      ✔ Should handle vesting with no cliff correctly
+    releasableAmount
+      ✔ Should return correct releasable amount
+      ✔ Should return 0 if all vested tokens released
+    release
+      ✔ Should release vested tokens
+      ✔ Should transfer correct amount to beneficiary
+      ✔ Should emit TokensReleased event
+      ✔ Should update released amount correctly
+      ✔ Should revert if no tokens to release
+      ✔ Should allow multiple releases over time (67ms)
+      ✔ Should handle releasing all tokens after vesting period (38ms)
+    Double Claim Protection
+      27) Should prevent claiming same tokens twice
+      ✔ Should correctly track released amount across multiple releases (64ms)
+    Multiple Beneficiaries
+      ✔ Should handle multiple independent vesting schedules (72ms)
+    withdrawExcess
+      ✔ Should allow owner to withdraw excess tokens
+      ✔ Should revert when non-owner tries to withdraw
+
+  BnbWhitelist
+    Deployment
+      ✔ Should deploy with correct merkle root (170ms)
+      ✔ Should set owner correctly
+      ✔ Should emit MerkleRootUpdated event on deployment (84ms)
+      ✔ Should deploy with zero root (56ms)
+    setMerkleRoot
+      ✔ Should allow owner to update merkle root
+      ✔ Should emit MerkleRootUpdated event (42ms)
+      ✔ Should revert when non-owner tries to update
+      ✔ Should allow setting zero hash as root
+    verify
+      ✔ Should verify whitelisted address with valid proof
+      ✔ Should verify all whitelisted addresses
+      ✔ Should reject non-whitelisted address
+      ✔ Should reject with empty proof
+      ✔ Should reject with invalid proof
+      ✔ Should return false if merkle root is zero
+      ✔ Should handle single address in whitelist (101ms)
+      ✔ Should handle large whitelist (88ms)
+    verifyBatch
+      ✔ Should verify multiple addresses at once
+      ✔ Should return mixed results for valid and invalid addresses
+      ✔ Should revert if arrays have different lengths
+      ✔ Should handle empty arrays
+      ✔ Should handle large batch verification (147ms)
+    Merkle Root Updates
+      ✔ Should invalidate old proofs after root update
+      ✔ Should allow adding addresses to whitelist
+      ✔ Should allow removing addresses from whitelist
+    Edge Cases
+      ✔ Should handle address with leading zeros (122ms)
+      ✔ Should handle checksummed and non-checksummed addresses (82ms)
+      ✔ Should handle duplicate addresses in merkle tree (105ms)
+    Gas Optimization
+      ✔ Should verify with reasonable gas cost
+      ✔ Should handle deep merkle tree efficiently (248ms)
+
+
+  134 passing (17s)
+  27 failing
+
+  1) Integration Tests
+       Full Presale Lifecycle
+         Should complete full lifecycle: create -> contribute -> finalize -> claim:
+     Error: Transaction reverted without a reason string
+    at BnbPresale.finalize (contracts/BnbPresale.sol:165)
+    at <UnrecognizedContract>.<unknown> (0x856e4424f806d16e8cbc702b3c0f2ede5468eae5)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.finalize (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/Integration.test.ts:109:7)
+  
+
+  2) Integration Tests
+       Multiple Concurrent Presales
+         Should handle multiple presales running concurrently:
+     Error: Transaction reverted without a reason string
+    at BnbPresale.finalize (contracts/BnbPresale.sol:165)
+    at <UnrecognizedContract>.<unknown> (0x856e4424f806d16e8cbc702b3c0f2ede5468eae5)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.finalize (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/Integration.test.ts:354:7)
+  
+
+  3) Integration Tests
+       Complex Contribution Patterns
+         Should handle many small contributions correctly:
+     Error: Transaction reverted without a reason string
+    at BnbPresale.finalize (contracts/BnbPresale.sol:165)
+    at <UnrecognizedContract>.<unknown> (0x856e4424f806d16e8cbc702b3c0f2ede5468eae5)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.finalize (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/Integration.test.ts:454:7)
+  
+
+  4) Integration Tests
+       Complex Contribution Patterns
+         Should handle contributions up to exact hard cap:
+     AssertionError: Expected transaction NOT to be reverted
+      at async Context.<anonymous> (test/Integration.test.ts:502:7)
+
+  5) Integration Tests
+       Gas Optimization Verification
+         Should efficiently handle batch claims:
+     Error: Transaction reverted without a reason string
+    at BnbPresale.finalize (contracts/BnbPresale.sol:165)
+    at <UnrecognizedContract>.<unknown> (0x856e4424f806d16e8cbc702b3c0f2ede5468eae5)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.finalize (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/Integration.test.ts:544:7)
+  
+
+  6) BnbPresale
+       State Transitions
+         Should transition to Finalized after finalization:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:143:7)
+  
+
+  7) BnbPresale
+       contribute()
+         Should revert if hard cap would be exceeded:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:272:9)
+  
+
+  8) BnbPresale
+       finalize()
+         Should finalize when hard cap reached:
+     AssertionError: Expected transaction NOT to be reverted
+      at async Context.<anonymous> (test/BnbPresale.test.ts:320:7)
+
+  9) BnbPresale
+       finalize()
+         Should finalize after end time if soft cap met:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:332:7)
+  
+
+  10) BnbPresale
+       finalize()
+         Should revert if called before end time and hard cap not reached:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:347:7)
+  
+
+  11) BnbPresale
+       finalize()
+         Should emit Finalized event:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:381:7)
+  
+
+  12) BnbPresale
+       finalize()
+         Should revert if insufficient tokens in contract:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:392:7)
+  
+
+  13) BnbPresale
+       finalize()
+         Should finalize at exactly soft cap:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:411:7)
+  
+
+  14) BnbPresale
+       Platform Fee
+         Should send correct platform fee to fee recipient:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:427:7)
+  
+
+  15) BnbPresale
+       Platform Fee
+         Should calculate platform fee correctly for large amounts:
+     Error: Transaction reverted without a reason string
+    at BnbPresale.finalize (contracts/BnbPresale.sol:165)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.finalize (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:455:7)
+  
+
+  16) BnbPresale
+       refund()
+         Should revert if presale succeeded:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:537:7)
+  
+
+  17) BnbPresale
+       claim()
+         Should allow claiming tokens after finalization:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:570:7)
+  
+
+  18) BnbPresale
+       claim()
+         Should transfer correct token amount based on rate:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:587:7)
+  
+
+  19) BnbPresale
+       claim()
+         Should emit Claimed event:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:609:7)
+  
+
+  20) BnbPresale
+       claim()
+         Should revert if not finalized:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:623:7)
+  
+
+  21) BnbPresale
+       claim()
+         Should revert if already claimed:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:639:7)
+  
+
+  22) BnbPresale
+       claim()
+         Should revert if no tokens to claim:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:660:7)
+  
+
+  23) BnbPresale
+       claim()
+         Should mark contributor as claimed:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:679:7)
+  
+
+  24) BnbPresale
+       cancel()
+         Should revert if already finalized:
+     Error: VM Exception while processing transaction: reverted with custom error 'ContributionTooHigh()'
+    at BnbPresale.contribute (contracts/BnbPresale.sol:148)
+    at <UnrecognizedContract>.<unknown> (0x524f04724632eed237cba3c37272e018b3a7967e)
+    at EdrProviderWrapper.request (node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:455:41)
+    at async HardhatEthersSigner.sendTransaction (node_modules/@nomicfoundation/hardhat-ethers/src/signers.ts:185:18)
+    at async send (node_modules/ethers/src.ts/contract/contract.ts:313:20)
+    at async Proxy.contribute (node_modules/ethers/src.ts/contract/contract.ts:352:16)
+    at async Context.<anonymous> (test/BnbPresale.test.ts:726:7)
+  
+
+  25) BnbPresale
+       Edge Cases
+         Should handle presale reaching exactly soft cap:
+     AssertionError: Expected transaction NOT to be reverted
+      at async Context.<anonymous> (test/BnbPresale.test.ts:765:7)
+
+  26) BnbPresale
+       Edge Cases
+         Should handle presale reaching exactly hard cap:
+     AssertionError: Expected transaction NOT to be reverted
+      at async Context.<anonymous> (test/BnbPresale.test.ts:781:7)
+
+  27) BnbVesting
+       Double Claim Protection
+         Should prevent claiming same tokens twice:
+     AssertionError: Expected transaction to be reverted with custom error 'NoTokensToRelease', but it didn't revert
+      at async Context.<anonymous> (test/BnbVesting.test.ts:593:9)
+
+
+
